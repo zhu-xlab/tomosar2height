@@ -18,6 +18,8 @@ import hydra
 from omegaconf import DictConfig
 from rasterio.windows import Window
 
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 from utils import lock_seed
 from utils import load_pc, save_pc_to_ply
 from utils import crop_pc_2d
