@@ -1,0 +1,76 @@
+# @package _global_
+
+model:
+  name: tomosar2height
+  encoder: pointnet_local_pool  # pointnet_local_pool, for point cloud
+  encoder_kwargs:
+    hidden_dim: 32
+    feature_dim: 32
+    plane_resolution: 256  # (-> 2m x 2m feature cube given 512m x 512m patch)
+    scatter_type: max
+    unet_type: alto  # unet or alto
+    unet_kwargs:
+      depth: 5   # span entire feature image
+      merge_mode: concat
+      start_filts: 32
+  encoder2: unet  # unet for image
+  encoder2_kwargs:
+    num_classes: 32
+    in_channels: 3
+    depth: 6
+    merge_mode: concat
+    start_filts: 32
+#  encoder2: hourglass  # hourglass for image
+#  encoder2_kwargs:
+#    in_channel: 3  # num of input images
+#    feature_dim: 32
+#    num_hourglass: 2
+#    num_stack: 4
+#    norm: group
+#    hg_down: ave_pool
+  decoder_pixel_kwargs:
+    mode: conv # conv, fc
+    use_footprint: ${use_footprint}
+    hidden_dim: 32
+    out_dim: 1
+    sample_mode: bilinear
+    leaky: false
+    aggregate: attentive  # mean, max, attentive
+    num_heads: 64
+  data_dim: 3
+
+training:
+  run_name: TomoSAR2Height
+  out_dir: './outputs'
+  resume_from: null
+  augmentation:
+    flip: false
+    rotate: false
+  random_dataset_length: 6400
+  batch_size: 1
+  max_iteration: 10000
+  val_batch_size: 1
+  lock_seed: True
+  optimize_every: 64
+  learning_rate: 0.0001
+  scheduler:
+    type: CyclicLR
+    kwargs:
+      base_lr: 0.0001
+      max_lr: 0.0005
+      mode: triangular2
+      gamma: 1.0
+      step_size_up: 500
+      step_size_down: 500
+      cycle_momentum: false
+  model_selection_metric: loss_l1
+  print_every: 1
+  visualize_every: 100
+  validate_every: 100
+  checkpoint_every: 100
+  backup_every: 100
+  weight_ce: 10.
+
+test:
+  threshold: 0.5
+  check_point: ./outputs/${test.run_name}${run_suffix}/check_points/model_best.pt

@@ -1,0 +1,65 @@
+# @package _global_
+
+training:
+  run_name: TomoSAR2Height-munich
+  resume_from: ''
+
+test:
+  run_name: TomoSAR2Height-munich
+
+mask_files:
+  building: data/munich/raster/mask_1m.tif
+input_pointcloud_folder: data/munich/cloud
+gt_dsm: data/munich/raster/ndsm_1m.tif
+output:
+  output_folder: data/munich/generated
+  save_visualization_pc: True
+build_training_data: true
+
+out_of_mask_value: 0  # mask value out of mask area
+dilate_building: 2    # dilate 2 pixels (2m)
+
+lock_seed: True
+
+chunk:
+  chunk_x: [ 686167.0, 688430.0, 690692.0, 692954.0, 695217.0 ]
+  chunk_y: [ 5331627.0, 5333537.0, 5335447.0, 5337357.0 ]
+  chunk_safe_padding: 200
+  sliding_window: [ 512, 512 ]
+  sliding_step: 512
+  padding_z: [ 10, 10 ]
+
+dataset:
+  name: munich
+  path: data/munich/generated
+  dsm_gt_path: ${gt_dsm}
+  mask_files:
+    building: data/munich/raster/mask_1m.tif
+  train_chunks: [ 0, 1, 2, 3, 4, 6, 7, 9, 10, 11 ]
+  val_chunks: [ 8 ]
+  test_chunks: [ 5 ]
+  vis_chunks: [ 5 ]
+
+  satellite_image:
+    folder: data/munich/raster
+    pairs: [ 'image_1m.tif' ]
+    normalize:
+      mean: [ 885.1, 823.6, 622.6 ]
+      std: [ 406.0, 350.2, 332.9 ]
+
+  normalize:
+    x_range: [ 0., 1. ]
+    y_range: [ 0., 1. ]
+    z_shift: 'local_min'  # ['local_min', 'global_min']
+    z_bound: [465.5, 599.5]
+  patch_size: [ 512, 512 ]  # world (x, y) -> DSM pixel (512, 512) and image pixel (512, 512)
+
+  sliding_window: # anchors for regular patching
+    val_strip: [ 512, 512 ]
+    vis_strip: [ 256, 256 ]
+    test_strip: [ 256, 256 ]
+
+dsm_generation:
+  pixel_size: [1, 1]
+  crs_epsg: 25832
+  half_blend_percent: [0.5, 0.5]

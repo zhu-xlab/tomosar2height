@@ -1,0 +1,39 @@
+# Default configuration for the Project.
+# Values shall be overridden by respective configurations.
+
+# default settings
+defaults:
+  - _self_
+  - model: tomosar2height
+  - dataset: munich
+  - override hydra/job_logging: custom
+  - override hydra/hydra_logging: colorlog
+
+run_suffix: ''
+
+# network settings
+use_cloud: true
+use_image: false
+use_footprint: false
+
+# runtime settings
+gpu_id: 0
+dataloader:
+  n_workers: 8
+
+# hydra settings
+hydra:
+  run:
+    dir: ./outputs
+  verbose: false
+
+# wandb settings
+wandb: false
+wandb_dir: './outputs'
+
+# logging settings
+logging:
+  filename: logging.log
+  format: ' %(asctime)s - %(levelname)s -%(filename)s - %(funcName)s >> %(message)s'
+  console_level: 20
+  file_level: 10
