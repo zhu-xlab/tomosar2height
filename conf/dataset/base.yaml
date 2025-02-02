@@ -1,0 +1,33 @@
+# @package _global_
+
+out_of_mask_value: 0  # mask value out of mask area
+dilate_building: 2    # dilate 2 pixels (2m)
+
+lock_seed: True
+
+output:
+  save_visualization_pc: True
+build_training_data: true
+
+chunk:
+  chunk_safe_padding: 200
+  sliding_window: [ 512, 512 ]
+  sliding_step: 512
+  padding_z: [ 10, 10 ]
+
+dataset:
+  normalize:
+    x_range: [ 0., 1. ]
+    y_range: [ 0., 1. ]
+    z_shift: 'local_min'  # ['local_min', 'global_min']
+
+  patch_size: [ 512, 512 ]  # world (x, y) -> DSM pixel (512, 512) and image pixel (512, 512)
+
+  sliding_window: # for regular patching
+    val_strip: [ 512, 512 ]
+    vis_strip: [ 256, 256 ]
+    test_strip: [ 256, 256 ]
+
+dsm_generation:
+  pixel_size: [1, 1]
+  half_blend_percent: [0.5, 0.5]

@@ -14,7 +14,6 @@ run_suffix: ''
 # network settings
 use_cloud: true
 use_image: false
-use_footprint: false
 
 # runtime settings
 gpu_id: 0

@@ -1,0 +1,28 @@
+name: tomosar2height
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - affine
+  - gdal=3.6
+  - hydra-colorlog
+  - hydra-core
+  - laspy
+  - matplotlib
+  - omegaconf
+  - pytorch-cuda=11.8
+  - pytorch-scatter
+  - pytorch==2.3.0
+  - rasterio
+  - scikit-learn
+  - scipy
+  - tabulate
+  - torchvision==0.18.0
+  - tqdm
+  - transformations
+  - trimesh
+  - urllib3
+  - wandb
+  - pip
+  - pip:
+    - open3d==0.18.0

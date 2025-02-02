@@ -10,7 +10,12 @@ git clone git@github.com:chenzhaiyu/tomosar2height.git
 cd tomosar2height
 ```
 
-* Set up a Conda environment and install dependencies
+* All-in-one installation to create a conda environment with all dependencies
+```bash
+conda env create -f environment.yml && conda activate tomosar2height
+```
+
+* If you prefer manual installation, follow these steps
 ```bash
 conda create --name tomosar2height python=3.10
 conda activate tomosar2height
@@ -37,27 +42,32 @@ Train TomoSAR2Height using different data modalities:
 
 * Using point clouds only
 ```bash
-python train.py dataset=munich use_cloud=true use_image=false use_footprint=false wandb=true run_suffix='_suffix' training.max_iteration=10000 gpu_id=0
+# Replace `berlin` to `munich` for Munich data
+python train.py dataset=berlin use_cloud=true use_image=false wandb=true run_suffix=_cloud gpu_id=0
 ```
 
 * Using point clouds and images
 ```bash
-python train.py dataset=munich use_cloud=true use_image=true use_footprint=false wandb=true run_suffix='_suffix' training.max_iteration=10000 gpu_id=0
-```
-
-* Using point clouds, images, and footprint supervision
-```bash
-python train.py dataset=munich use_cloud=true use_image=true use_footprint=true wandb=true run_suffix='_suffix' training.max_iteration=10000 gpu_id=0
+# Replace `berlin` to `munich` for Munich data
+python train.py dataset=berlin use_cloud=true use_image=true wandb=true run_suffix=_cloud+image gpu_id=0
 ```
 
 ### 📊 Evaluation
 
+Before evaluation, make sure checkpoints are available at `./outputs/TomoSAR2Height-{dataset}{run_suffix}/check_points/model_best.pt`.
+
 * Evaluate a trained TomoSAR2Height model (about 10 seconds):
 ```bash
 # Berlin data (point cloud only)
-python test.py dataset=berlin use_cloud=true use_image=false use_footprint=false run_suffix='_alto' gpu_id=0
+python test.py dataset=berlin use_cloud=true use_image=false run_suffix=_cloud gpu_id=0
 
 # Munich data (point cloud only)
-python test.py dataset=munich use_cloud=true use_image=false use_footprint=false run_suffix='_alto' gpu_id=0 model.encoder_kwargs.unet_kwargs.depth=6
+python test.py dataset=munich use_cloud=true use_image=false run_suffix=_cloud gpu_id=0
+
+# Berlin data (point cloud & image)
+python test.py dataset=berlin use_cloud=true use_image=true run_suffix=_cloud+image gpu_id=0
+
+# Munich data (point cloud & image)
+python test.py dataset=munich use_cloud=true use_image=true run_suffix=_cloud+image gpu_id=0
 ```
-The results will be saved at `./outputs/TomoSAR2Height-{dataset}{run_suffix}/tiff_test`.
+Specify `run_suffix={YOUR_SUFFIX}` with your desired suffix if needed. The results will be saved at `./outputs/TomoSAR2Height-{dataset}{run_suffix}/tiff_test`.

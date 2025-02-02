@@ -1,5 +1,10 @@
 # @package _global_
 
+defaults:
+  - base
+
+use_footprint: false
+
 training:
   run_name: TomoSAR2Height-berlin
   resume_from: ''
@@ -13,21 +18,10 @@ input_pointcloud_folder: data/berlin/cloud
 gt_dsm: data/berlin/raster/ndsm_rotate12deg_aoi.tif
 output:
   output_folder: data/berlin/generated
-  save_visualization_pc: True
-build_training_data: true
-
-out_of_mask_value: 0  # mask value out of mask area
-dilate_building: 2    # dilate 2 pixels (2m)
-
-lock_seed: True
 
 chunk:
   chunk_x: [ 384590.0, 386580.0, 388570.0, 390560.0, 392550.0]
   chunk_y: [ 5819040.0, 5820700.0, 5822375.0, 5824010.0 ]
-  chunk_safe_padding: 200
-  sliding_window: [ 512, 512 ]
-  sliding_step: 512
-  padding_z: [ 10, 10 ]
 
 dataset:
   name: berlin
@@ -48,18 +42,7 @@ dataset:
       std: [ 344.1, 291.0, 247.2 ]
 
   normalize:
-    x_range: [ 0., 1. ]
-    y_range: [ 0., 1. ]
-    z_shift: 'local_min'  # ['local_min', 'global_min']
     z_bound: [-33.7, 156.5]
-  patch_size: [ 512, 512 ]  # world (x, y) -> DSM pixel (512, 512) and image pixel (512, 512)
-
-  sliding_window: # for regular patching
-    val_strip: [ 512, 512 ]
-    vis_strip: [ 256, 256 ]
-    test_strip: [ 256, 256 ]
 
 dsm_generation:
-  pixel_size: [1, 1]
   crs_epsg: 25833
-  half_blend_percent: [0.5, 0.5]
