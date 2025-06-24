@@ -2,7 +2,7 @@
 
 model:
   name: tomosar2height
-  encoder: pointnet_local_pool
+  encoder: pointnet_local_pool  # pointnet_local_pool or pointnet_plus_plus
   encoder_kwargs:
     hidden_dim: 32
     feature_dim: 32
@@ -21,7 +21,7 @@ model:
     merge_mode: concat
     start_filts: 32
   decoder_pixel_kwargs:
-    mode: conv # conv or fc
+    mode: conv  # conv or fc
     use_footprint: ${use_footprint}
     hidden_dim: 32
     out_dim: 1

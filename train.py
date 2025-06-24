@@ -45,10 +45,10 @@ def train(cfg: DictConfig):
     batch_size, val_batch_size = cfg_training['batch_size'], cfg_training['val_batch_size']
 
     # Output directories
-    out_dir_run, out_dir_ckpt, out_dir_tiff = (
-        os.path.join(cfg_training['out_dir'], f"{cfg_training['run_name']}{cfg.run_suffix}"),
-        os.path.join(cfg_training['out_dir'], "check_points"),
-        os.path.join(cfg_training['out_dir'], "tiff")
+    out_dir_run = os.path.join(cfg_training['out_dir'], f"{cfg_training['run_name']}{cfg.run_suffix}")
+    out_dir_ckpt, out_dir_tiff = (
+        os.path.join(out_dir_run, "check_points"),
+        os.path.join(out_dir_run, "tiff")
     )
     for d in [out_dir_run, out_dir_ckpt, out_dir_tiff]:
         os.makedirs(d, exist_ok=True)
