@@ -69,7 +69,7 @@ def test(cfg: DictConfig):
     )
 
     evaluator = DSMEvaluator(
-        cfg_dataset['dsm_gt_path'], None, {'building': cfg_dataset['mask_files']['building']}
+        cfg_dataset['dsm_gt_path'], None, cfg_dataset['mask_files']
     )
 
     # Load checkpoint
@@ -102,7 +102,10 @@ def test(cfg: DictConfig):
         eval_dict, diff_arr = evaluator.eval(target_dsm, dsm_writer.T)
 
         eval_path = os.path.join(out_dir_tiff, f"{cfg_training['run_name']}_dsm_{n_iter:06d}_eval.txt")
-        print_statistics(eval_dict, f"{cfg_training['run_name']}-iter{n_iter}", save_to=eval_path)
+        print_statistics(eval_dict, f"{cfg_training['run_name']}-iter{n_iter}", 
+                        save_to=eval_path, 
+                        has_binary=evaluator.has_binary_building,
+                        has_ternary=evaluator.has_ternary_building)
         logging.info(f"Evaluation results saved to '{eval_path}'")
 
         residual_path = os.path.join(out_dir_tiff, f"{cfg_training['run_name']}_residual_{n_iter:06d}.tiff")

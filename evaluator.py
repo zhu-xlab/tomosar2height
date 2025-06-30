@@ -21,14 +21,34 @@ class DSMEvaluator:
         )
 
         self.other_mask = None
+        self.has_binary_building = False
+        self.has_ternary_building = False
+        
         if other_mask_path_dict:
-            self.other_mask = {
-                key: RasterReader(path).get_data().astype(bool)
-                for key, path in other_mask_path_dict.items()
-            }
-            if 'building' in self.other_mask:
-                self.other_mask['building'] = dilate_mask(self.other_mask['building'], iterations=2)
+            self.other_mask = {}
+            
+            if 'building' in other_mask_path_dict:
+                building_mask = RasterReader(other_mask_path_dict['building']).get_data().astype(bool)
+                self.other_mask['building'] = dilate_mask(building_mask, iterations=2)
                 self.other_mask['terrain'] = ~self.other_mask['building']
+                self.has_binary_building = True
+            
+            if 'type' in other_mask_path_dict:
+                type_mask = RasterReader(other_mask_path_dict['type']).get_data()
+                
+                self.other_mask['non_building'] = (type_mask == 0)
+                self.other_mask['residential'] = (type_mask == 1) 
+                self.other_mask['non_residential'] = (type_mask == 2)
+                self.other_mask['building_combined'] = (type_mask > 0)
+                
+                self.other_mask['residential'] = dilate_mask(self.other_mask['residential'], iterations=2)
+                self.other_mask['non_residential'] = dilate_mask(self.other_mask['non_residential'], iterations=2)
+                self.other_mask['building_combined'] = dilate_mask(self.other_mask['building_combined'], iterations=2)
+                self.has_ternary_building = True
+            
+            for key, path in other_mask_path_dict.items():
+                if key not in ['building', 'type']:
+                    self.other_mask[key] = RasterReader(path).get_data().astype(bool)
 
     def eval(self, target_dsm: np.ndarray, T: Affine):
         target_shape = target_dsm.shape
@@ -79,7 +99,8 @@ class DSMEvaluator:
         }
 
 
-def print_statistics(statistics: Dict, title: str, save_to: str = None):
+def print_statistics(statistics: Dict, title: str, save_to: str = None, has_binary: bool = False, has_ternary: bool = False):
+    """Print statistics with sections for both binary and ternary building evaluation."""
     metrics = {
         'MAE[m]': 'MAE', 'RMSE[m]': 'RMSE', 'MedAE[m]': 'abs_median',
         'Max[m]': 'max', 'Min[m]': 'min', 'Median[m]': 'median',
@@ -87,17 +108,69 @@ def print_statistics(statistics: Dict, title: str, save_to: str = None):
     }
 
     header = list(metrics.keys())
-    content = []
-    for land_type, stats in statistics.items():
-        content.append([land_type.capitalize()] + [stats[metrics[m]] for m in header])
-
     header.insert(0, 'Type')
+    
     output = [
         "DSM Evaluation\t\t\tcreated: " + datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         title,
-        "Performance Evaluation", "=" * 20,
-        tabulate(content, headers=header, tablefmt="simple", floatfmt=".4f"),
-        "-" * 20,
+        "Performance Evaluation", "=" * 30
+    ]
+    
+    # Binary Building Section: {overall, terrain, building}
+    if has_binary:
+        binary_content = []
+        binary_keys = ['overall', 'terrain', 'building']
+        binary_display = {'overall': 'Overall', 'terrain': 'Terrain', 'building': 'Building'}
+        
+        for key in binary_keys:
+            if key in statistics:
+                display_name = binary_display[key]
+                binary_content.append([display_name] + [statistics[key][metrics[m]] for m in header[1:]])
+        
+        if binary_content:
+            output.extend([
+                "",
+                "Binary Building Classification:",
+                tabulate(binary_content, headers=header, tablefmt="simple", floatfmt=".4f")
+            ])
+    
+    # Ternary Building Section: {residential, non_residential}
+    if has_ternary:
+        ternary_content = []
+        ternary_keys = ['residential', 'non_residential']
+        ternary_display = {'residential': 'Residential', 'non_residential': 'Non Residential'}
+        
+        for key in ternary_keys:
+            if key in statistics:
+                display_name = ternary_display[key]
+                ternary_content.append([display_name] + [statistics[key][metrics[m]] for m in header[1:]])
+        
+        if ternary_content:
+            output.extend([
+                "",
+                "Building Type Classification:",
+                tabulate(ternary_content, headers=header, tablefmt="simple", floatfmt=".4f")
+            ])
+    
+    # Other masks (if any exist beyond the main categories)
+    other_content = []
+    processed_keys = {'overall', 'building', 'terrain', 'residential', 'non_residential', 'non_building', 'building_combined'}
+    
+    for key, stats in statistics.items():
+        if key not in processed_keys:
+            display_name = key.replace('_', ' ').title()
+            other_content.append([display_name] + [stats[metrics[m]] for m in header[1:]])
+    
+    if other_content:
+        output.extend([
+            "",
+            "Other Classifications:",
+            tabulate(other_content, headers=header, tablefmt="simple", floatfmt=".4f")
+        ])
+    
+    output.extend([
+        "",
+        "-" * 30,
         """ Metrics:
         MAE: Mean Absolute residual Error
         RMSE: Root Mean Square Error
@@ -107,8 +180,17 @@ def print_statistics(statistics: Dict, title: str, save_to: str = None):
         Median: Median value
         NMAD: Normalised Median Absolute Deviation
         #pixels: Number of pixels
+        
+        Binary Building Classes:
+        - Overall: All valid pixels
+        - Terrain: Non-building areas (from binary mask)
+        - Building: Building areas (from binary mask)
+        
+        Building Type Classes:
+        - Residential: Residential buildings (class 1)
+        - Non Residential: Non-residential buildings (class 2)
         """
-    ]
+    ])
 
     result = '\n'.join(output)
     if save_to:
@@ -129,4 +211,4 @@ if __name__ == '__main__':
     evaluator = DSMEvaluator(ground_truth_tiff, other_mask_path_dict=mask_paths)
     stats, residuals = evaluator.eval(output_reader.get_data(), output_reader.T)
 
-    print(print_statistics(stats, title="DSM Evaluation"))
+    print(print_statistics(stats, title="DSM Evaluation", has_binary=True, has_ternary='type' in mask_paths))

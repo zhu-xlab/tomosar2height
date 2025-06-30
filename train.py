@@ -168,7 +168,7 @@ def train(cfg: DictConfig):
                     logging.info(f"Iteration {n_iter}, Loss = {trainer.last_avg_loss:.5f}")
 
                 if n_iter % cfg_training['checkpoint_every'] == 0:
-                    checkpoint_io.save(os.path.join(out_dir_ckpt, DEFAULT_MODEL_FILE),
+                    checkpoint_io.save(os.path.join(out_dir_ckpt, f'model_{n_iter}.pt'),
                                        n_iter=n_iter, loss_val_best=metric_val_best,
                                        training_time=training_time.total_seconds())
 

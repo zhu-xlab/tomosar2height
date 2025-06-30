@@ -34,6 +34,7 @@ dataset:
   dsm_gt_path: ${gt_dsm}
   mask_files:
     building: data/munich/raster/mask_1m.tif
+    type: data/munich/raster/building_class012_aoi.tif
   train_chunks: [ 0, 1, 2, 3, 4, 6, 7, 9, 10, 11 ]
   val_chunks: [ 8 ]
   test_chunks: [ 5 ]

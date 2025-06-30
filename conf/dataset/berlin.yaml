@@ -29,6 +29,7 @@ dataset:
   dsm_gt_path: ${gt_dsm}
   mask_files:
     building: data/berlin/raster/footprint_rotate12deg_aoi.tif
+    type: data/berlin/raster/building_class_aoi.tif
   train_chunks: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
   val_chunks: [ 10 ]
   test_chunks: [ 11 ]
