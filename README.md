@@ -1,6 +1,6 @@
 # TomoSAR2Height
 
-This repository provides the code for training and evaluating **TomoSAR2Height**, a method for reconstructing building heights (nDSMs) from spaceborne TomoSAR point clouds.
+This repository provides the code for training and evaluating [**TomoSAR2Height**](https://arxiv.org/abs/2601.00658), a method for reconstructing building heights (nDSMs) from spaceborne TomoSAR point clouds.
 
 ## 🛠️ Installation
 
@@ -84,3 +84,18 @@ python train.py --cfg job
 python test.py --cfg job
 ```
 Alternatively, review the configuration file: `conf/config.yaml`.
+
+## 🎓 Citation
+
+If you use TomoSAR2Height in a scientific work, please cite the paper:
+
+```bibtex
+
+@article{chen2026tomosar2height,
+  title = {Reconstructing Building Height from Spaceborne TomoSAR Point Clouds Using a Dual-Topology Network},
+  journal ={arXiv preprint arXiv:2601.00658},
+  year = {2026},
+  author = {Chen, Zhaiyu and Wang, Yuanyuan and Shi, Yilei and Zhu, Xiao Xiang},
+}
+}
+```
