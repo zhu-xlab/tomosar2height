@@ -92,10 +92,14 @@ If you use TomoSAR2Height in a scientific work, please cite the paper:
 ```bibtex
 
 @article{chen2026tomosar2height,
-  title = {Reconstructing Building Height from Spaceborne TomoSAR Point Clouds Using a Dual-Topology Network},
-  journal ={arXiv preprint arXiv:2601.00658},
-  year = {2026},
-  author = {Chen, Zhaiyu and Wang, Yuanyuan and Shi, Yilei and Zhu, Xiao Xiang},
-}
+  author={Chen, Zhaiyu and Wang, Yuanyuan and Shi, Yilei and Zhu, Xiao Xiang},
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={Reconstructing Building Height from Spaceborne TomoSAR Point Clouds Using a Dual-Topology Network}, 
+  year={2026},
+  volume={},
+  number={},
+  pages={1-1},
+  keywords={Point cloud compression;Buildings;Image reconstruction;Three-dimensional displays;Synthetic aperture radar;Optical scattering;Optical imaging;Optical interferometry;Radar polarimetry;Image resolution;Height estimation;3D reconstruction;SAR tomography;point cloud;deep learning},
+  doi={10.1109/TGRS.2026.3656340}}
 }
 ```
