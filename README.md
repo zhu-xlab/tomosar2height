@@ -100,6 +100,6 @@ If you use TomoSAR2Height in a scientific work, please cite the paper:
   number={},
   pages={1-1},
   keywords={Point cloud compression;Buildings;Image reconstruction;Three-dimensional displays;Synthetic aperture radar;Optical scattering;Optical imaging;Optical interferometry;Radar polarimetry;Image resolution;Height estimation;3D reconstruction;SAR tomography;point cloud;deep learning},
-  doi={10.1109/TGRS.2026.3656340}}
+  doi={10.1109/TGRS.2026.3656340}
 }
 ```
